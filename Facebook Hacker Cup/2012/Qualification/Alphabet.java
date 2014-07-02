@@ -1,0 +1,46 @@
+import java.lang.Integer;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.lang.Math;
+
+class Alphabet {
+	private static int[] alph = new int[100];
+	private static char[] word = { 'H', 'A', 'C', 'K', 'E', 'R', 'C', 'U', 'P' };
+
+	public static void resetAlph() {
+		for(int i = 0; i < word.length; i++)
+			alph[word[i]] = 0;
+	}
+
+	public static void doMemoization(char[] sentence) {
+		for(int i = 0; i < sentence.length; i++)
+			alph[sentence[i]]++;
+	}
+
+	public static int getWordCount() {
+		int max = Integer.MAX_VALUE;
+		int val;
+		for(int i = 0; i < word.length; i++) {
+			val = alph[word[i]];
+			if (val < max)
+				max = val;
+		}
+		return max;
+	}
+
+	public static void main(String[] args) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		String line = reader.readLine();
+		int cases = Integer.parseInt(line);
+		int caseCnt = 0;
+		
+		while(cases != caseCnt) {
+			resetAlph();
+			line = reader.readLine();
+			doMemoization(line.toCharArray());
+			System.out.println("Case #" + ++caseCnt + ": " + getWordCount());
+		}
+		
+	}
+}
