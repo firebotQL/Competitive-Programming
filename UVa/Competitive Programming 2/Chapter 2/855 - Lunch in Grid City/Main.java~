@@ -1,0 +1,21 @@
+import java.util.*;
+import java.io.*;
+
+class Main {
+	public static void main(String[] args) {
+		Scanner scan = new Scanner(System.in);
+		int T = scan.nextInt();
+		int S,A,F;
+		ArrayList<Integer> street = new ArrayList<Integer>();
+		ArrayList<Integer> avenue = new ArrayList<Integer>();
+		while(T-- != 0) {
+			S = scan.nextInt();
+			A = scan.nextInt();
+			F = scan.nextInt();
+			while(F-- != 0) {
+				list.add(scan.nextInt());
+			}
+		}
+		
+	}
+}

@@ -1,0 +1,67 @@
+#include <cstdlib>
+#include <cstdio>
+
+typedef std::vector<int> iv;
+
+
+const char** winner = { "Marcelo", "Carlos" };
+
+void merge(iv& left, iv& right, long long& count, iv& result)
+{
+	int i(0), j(0);
+	while(left.size() != i && right.size() != j)
+	{
+		if (left[i] < right[j])
+			result.push_back(left[i++]);
+		else
+		{
+			result.push_back(right[j++]);
+			count += left.size()-i;
+		}
+	}
+
+	if (left.size() != i)
+		for(; i < left.size(); ++i)
+			result.push_back(left[i]);
+	
+	if (right.size() != j)
+		for(; j < right.size(); j++)
+			result.push_back(right[j]);
+}
+
+iv merge_sort(iv& line, long long&& count)
+{
+	if (line.size() <= 1)
+		return line;
+	
+	iv left, right, result;
+	int i, middle = line.size() / 2;
+	for(i = 0; i < middle; ++i)
+		left.push_back(line[i]);
+	for(i = middle; i < line.size(); ++i)
+		right.push_back(line[i]);
+	
+	left = merge_sort(left, count);
+	right = merge_sort(right, count);
+	merge(left, right, count, result);
+	return result;
+}
+
+int main(int argc, char argv[])
+{
+	int N, x;
+	iv line;
+	long long count;
+	while(scanf("%d\n", &N) && N)
+	{
+		count = 0;
+		line.clear();
+		while(N-- && scanf("%d\n", &x))
+		{
+			line.push_back(x);			
+		}
+		merge_sort(line, count);
+		printf("%s\n", winner[count/2]);
+	} 
+	return 0;
+}

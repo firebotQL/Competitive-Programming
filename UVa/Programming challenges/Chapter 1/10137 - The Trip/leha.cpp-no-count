@@ -1,0 +1,10 @@
+struct AvgDiffAccum { 
+	int avg; 
+	int operator()(int acc, int val) 
+	{ return acc + abs(val - avg); } 
+};
+AvgDiffAccum lessAcum = {sum / n}, moreAcum = {sum / n + 1};
+
+ int low = std::accumulate(less.begin(), less.end(), 0, lessAcum);
+ int upp = std::accumulate(more.begin(), more.end(), 0, moreAcum);
+ int ret = std::max(low, upp);

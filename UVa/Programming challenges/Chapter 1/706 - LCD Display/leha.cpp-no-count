@@ -1,0 +1,62 @@
+// 706 - LCD Display
+#include <cstdio>
+#include <iostream>
+#include <string>
+
+inline void openFiles() {
+#ifndef ONLINE_JUDGE
+	freopen("test.in", "rt", stdin);
+	//freopen("test.out", "wt", stdout);
+#endif
+}
+
+void solve();
+
+int main() {
+	openFiles();
+	solve();
+	return 0;
+}
+
+void printHLine(const int useLine[], const std::string& num, int scale) {
+	std::string line(scale, '-'), empt(scale, ' ');
+	for (int i = 0; i < num.size(); ++i) {
+		if (i) std::cout << " ";
+		bool use = useLine[num[i] - '0'];
+		std::cout << " " << (use ? line : empt) << " ";
+	}
+	std::cout << "\n";
+}
+
+void printVLine(const int useLine[], const std::string& num, int scale) {
+	std::string empt(scale, ' ');
+	for (int j = 0; j < scale; ++j) {
+		for (int i = 0; i < num.size(); ++i) {
+			if (i) std::cout << " ";
+			int type = useLine[num[i] - '0'];
+			char f = (type & 1) ? '|' : ' ';
+			char e = (type & 2) ? '|' : ' ';
+			std::cout << f << empt << e;
+		}
+		std::cout << "\n";
+	}
+}
+
+void solve() {
+	while (true) {
+		int n; std::string num;
+		std::cin >> n >> num;
+		if (!n) break;
+		const int line1[] = {1, 0, 1, 1, 0, 1, 1, 1, 1, 1};
+		const int line2[] = {3, 2, 2, 2, 3, 1, 1, 2, 3, 3};
+		const int line3[] = {0, 0, 1, 1, 1, 1, 1, 0, 1, 1};
+		const int line4[] = {3, 2, 1, 2, 2, 2, 3, 2, 3, 2};
+		const int line5[] = {1, 0, 1, 1, 0, 1, 1, 0, 1, 1};
+		printHLine(line1, num, n);
+		printVLine(line2, num, n);
+		printHLine(line3, num, n);
+		printVLine(line4, num, n);
+		printHLine(line5, num, n);
+		std::cout << std::endl;
+	}
+}

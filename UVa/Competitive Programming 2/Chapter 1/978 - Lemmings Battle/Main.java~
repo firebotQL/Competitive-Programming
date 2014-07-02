@@ -1,0 +1,81 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+	public static Comparator<Integer> comp = new Comparator<Integer>( ) {
+				public int compare(Integer i, Integer j) {
+					return j - i;
+				}
+	};
+
+	public static void emulateBattle(int B, PriorityQueue<Integer> sgArmy, PriorityQueue<Integer> sbArmy) {
+		int i;
+		PriorityQueue<Integer> sgLeft = new PriorityQueue<Integer>();
+		PriorityQueue<Integer> sbLeft = new PriorityQueue<Integer>();
+		Integer sg, sb;
+		while(sgArmy.size() != 0 && sbArmy.size() != 0) {
+			sgLeft.clear();
+			sbLeft.clear();
+			for(i = 0; i < B; i++) {
+				sg = sgArmy.poll();
+				sb = sbArmy.poll();
+				if (sg == null || sb == null) {
+					if (sg != null)
+						sgLeft.add(sg);
+					if (sb != null)
+						sbLeft.add(sb);
+					break;
+				}
+				if (sg > sb)
+					sgLeft.add(sg-sb);
+				else if (sg < sb)
+					sbLeft.add(sb-sg);		
+			}
+			sgArmy.addAll(sgLeft);
+			sbArmy.addAll(sbLeft);
+		}
+	}
+	public static void fillQueue(int count, PriorityQueue<Integer> queue, Scanner sc) {
+		while(count-- != 0) {
+			queue.add(sc.nextInt());
+		}		
+	}
+	
+	public static void main(String[] args) throws IOException {
+		Scanner sc = new Scanner(System.in);
+		int N = sc.nextInt();
+		int B, SG, SB;
+		int lem;	
+		PriorityQueue<Integer> sgArmy = new PriorityQueue<Integer>(1000, comp);
+		PriorityQueue<Integer> sbArmy = new PriorityQueue<Integer>(1000, comp);
+		while(N-- != 0) {
+			B = sc.nextInt();
+			SG = sc.nextInt();
+			SB = sc.nextInt();
+			sgArmy.clear();
+			sbArmy.clear();
+
+			fillQueue(SG, sgArmy, sc);
+			fillQueue(SB, sbArmy, sc);
+
+			emulateBattle(B, sgArmy, sbArmy);
+
+			if (sbArmy.size() == 0 && sgArmy.size() == 0) {
+				System.out.println("green and blue died");				
+			} else {
+				if (sbArmy.size() == 0)
+					System.out.println("green wins");
+					while(sgArmy.size() != 0)
+						System.out.println(sgArmy.poll());
+				} else 	if (sgArmy.size() == 0) {
+					System.out.println("blue wins");
+					while(sbArmy.size() != 0)
+						System.out.println(sbArmy.poll());
+				} 
+			}
+			
+			if (N != 0)
+				System.out.println();		
+		}
+	}
+}

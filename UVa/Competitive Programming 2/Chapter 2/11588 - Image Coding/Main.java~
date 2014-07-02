@@ -1,0 +1,49 @@
+import java.util.*;
+import java.io.*;
+
+class Main {
+	public static void main(String[] args) throws IOException {
+		Scanner scan = new Scanner(System.in);
+		String line;
+		int cases = scan.nextInt();
+		Map<Character, Integer> pixels = new HashMap<Character, Integer>();
+		Integer value, MAX = Integer.MIN_VALUE;
+		int sum, count, ca, row;
+		int R, C, M, N;
+		for(ca = 0 ; ca < cases; ca++) {
+			pixels.clear();
+			sum = 0;
+			count = 0;
+			row = 0;
+			MAX = Integer.MIN_VALUE;
+			R = scan.nextInt();
+			C = scan.nextInt();
+			M = scan.nextInt();
+			N = scan.nextInt();
+			System.out.println(R + " " + C + " " + M + " " + N);
+			scan.nextLine();
+			for(row = 0; row < R; row++) {
+				line = scan.nextLine();
+				for(Character c : line.toCharArray())  {
+					value = 1;
+					if (pixels.containsKey(c)) {
+						value = pixels.get(c);
+						value++;
+					}
+					pixels.put(c, value);
+					if (MAX < value) {
+						MAX = value;
+					}
+				}
+			}
+
+			for(Map.Entry<Character, Integer> entry : pixels.entrySet()) {
+				if (entry.getValue() == MAX) {
+					count++;
+				}
+			}
+			System.out.format("Case %d: %d\n", ca+1, (R*C-(MAX*count))*N+(count*MAX)*M);
+			
+		}
+	}
+}

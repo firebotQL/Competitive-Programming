@@ -1,0 +1,51 @@
+import java.util.*;
+import java.io.*;
+
+class Keyboard {
+	public static void addToList(int idx, int curidx, ArrayDeque<String> list, String line, char prev) {
+		if (idx != curidx) {
+			if (prev == ']') {
+				list.addLast(line.substring(idx, curidx));
+			} else {
+				list.addFirst(line.substring(idx, curidx));
+			}
+		}
+	}
+	
+	public static void main(String[] args) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		String line, subline;
+		ArrayDeque<String> list = new ArrayDeque<String>();
+		int i, idx;
+		char prev;
+		long start = System.currentTimeMillis();
+		while((line = reader.readLine()) != null) {
+			prev = ' ';
+			for(i = 0, idx = 0; i < line.length(); i++) {
+				switch( line.charAt(i)) {
+					case '[':
+						addToList(idx, i, list, line, prev);
+						idx = i+1;
+						prev = '[';
+						break;
+					case ']':
+						addToList(idx, i, list, line, prev);
+						idx = i+1;
+						prev = ']';
+						break;
+				}
+			}
+			
+			if (idx != i) {
+				addToList(idx, i, list, line, prev);
+			}
+
+			while(list.size() != 0)
+				System.out.print(list.removeFirst());
+			System.out.println();
+		}
+
+		long end = System.currentTimeMillis();
+		System.out.println(end-start + " ms.");
+	}
+}

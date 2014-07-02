@@ -1,0 +1,62 @@
+import java.util.*;
+import java.io.*;
+
+class Main {
+	public static int count = 0;
+	public static int maxSize = 1000000;
+	public static int[] array = new int[maxSize];
+	public static int[] left = new int[maxSize];
+	public static int[] right = new int[maxSize];
+	public static int[] result = new int[maxSize];
+	public static int size = 0;
+	
+	public static void mergeSort(int i, int j) {
+		if (i < j) {
+			int m = (i+j)/2;
+			mergeSort(i, m);
+			mergeSort(m+1, j);
+			merge(i, m, j);
+		}
+	}
+	
+	public static void merge(int i, int m, int j) {
+		int x, li = 0, ri = 0;
+		for(x = i; x < m; x++) {
+			left[li++] = array[x];
+		}
+		for(x = m; x < j; x++) {
+			right[ri++] = array[x];
+		}
+
+		li = ri = 0;
+
+		for(x = i; x < j; x++) {
+			System.out.println("left: " + left[li] + " right:" + right[ri]);
+			if (left[li] > right[ri]) {
+				array[x] = left[li++]; 
+			} else {
+				array[x] = right[ri++];
+			}
+		}
+	}
+	
+	public static void main(String[] args) throws IOException {
+		Scanner scan = new Scanner(System.in);
+		String line;
+		String[] tokens;
+		int c,i;
+		while(scan.hasNextInt()) {
+			size = scan.nextInt();
+			count = 0;
+			for(i = 0; i < size; i++) {
+				array[i] = scan.nextInt();
+			}
+			
+			mergeSort(0, size);
+			for(int j = 0; j < size; j++) 
+				System.out.print(array[j] + " "	);
+			System.out.println();
+			System.out.print(count);
+		}
+	}
+}

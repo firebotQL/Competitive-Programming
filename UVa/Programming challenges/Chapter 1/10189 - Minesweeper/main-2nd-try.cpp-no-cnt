@@ -1,0 +1,85 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+const char ccMine = '*';
+
+
+int GetFieldsAdjacentMinesCount(char** p_cpInput, int line, int index)
+{
+	int iCount = 0;
+	// Upper line
+	if (p_cpInput[line-1][index-1] == ccMine)
+		iCount++;
+	if (p_cpInput[line-1][index] == ccMine)
+		iCount++;
+	if (p_cpInput[line-1][index+1] == ccMine)
+		iCount++;
+
+	// Same line 
+	if (p_cpInput[line][index-1] == ccMine)
+		iCount++;
+	if (p_cpInput[line][index+1] == ccMine)
+		iCount++;
+
+	// Bottom line 
+	if (p_cpInput[line+1][index-1] == ccMine)
+		iCount++;
+	if (p_cpInput[line+1][index] == ccMine)
+		iCount++;
+	if (p_cpInput[line+1][index+1] == ccMine)
+		iCount++;
+	return iCount;
+}
+
+
+int main()
+{
+	//vector<string> input;
+	string str;
+	int n(-1),m(-1);
+	int iCount(0), iFieldCnt(1);
+	bool bFirst(true);
+	char** input;
+	while (cin >> n >> m && (n != 0 && m != 0))
+	{
+		input = new char*[n+2];
+		for(int i = 0; i < n; i++)
+		{
+			cin >> str;
+			input[i] = new char[m+2];
+			strcpy(&input[i][1], str.c_str());
+			input[i][0] = '.';
+			input[i][m] = '.';
+		}
+		n++;
+		m++;
+		if (!bFirst)
+			cout << endl;
+		else 
+			bFirst = false;
+		for (int i = 1; i < n; i++)
+		{
+			for(int j = 1; j < m; j++)
+				cout << input[i][j];
+			cout << endl;
+		}
+	/*	cout << "Field #" << iFieldCnt++ << ":" << endl;
+		for(int i = 1; i < n; i++)
+		{
+			for(int j = 1; j < m; j++)
+			{
+				if (input[i][j] != ccMine)
+					cout << GetFieldsAdjacentMinesCount(input, i, j);
+				else
+					cout << ccMine;
+			}
+			delete [] input[i];
+			cout << endl;
+		}
+		delete [] input; */
+	}
+	return 0;
+}

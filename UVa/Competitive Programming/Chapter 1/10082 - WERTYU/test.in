@@ -1,0 +1,16 @@
+Get character from stream
+
+1111111111Returns the character currently pointed by the internal file position indicator of the specified stream. The internal file position indicator is then advanced by one character to point to the next character.
+getc is equivalent to fgetc and also expects a stream as parameter, but getc may be implemented as a macro, so the argument passed to it should not be an expression with potential side effects.
+See getchar for a similar function without stream parameter.
+
+Parameters
+
+stream
+pointer to a FILE object that identifies the stream on which the operation is to be performed.
+
+
+Return Value
+
+The character read is returned as an int value.
+If the End-of-File is reached or a reading error happens, the function returns EOF and the corresponding error or eof indicator is set. You can use either ferror or feof to determine whether an error happened or the End-Of-File was reached.

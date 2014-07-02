@@ -1,0 +1,44 @@
+// 10137 - The Trip
+#include <cstdio>
+#include <cmath>
+#include <vector>
+#include <algorithm>
+#include <numeric>
+
+inline void openFiles() {
+#ifndef ONLINE_JUDGE
+	freopen("test.in", "rt", stdin);
+	//freopen("test.out", "wt", stdout);
+#endif
+}
+
+void solve();
+
+int main() {
+	openFiles();
+	solve();
+	return 0;
+}
+
+struct AvgDiffAccum { int avg; int operator()(int acc, int val) { return acc + abs(val - avg); } };
+
+void solve() {
+	while (true) {
+		int n; scanf("%d\n", &n);
+		if (!n) break;
+		std::vector<int> vec(n), less, more;
+		for (int i = 0; i < n; ++i) {
+			int m, c; scanf("%d.%d\n", &m, &c);
+			vec[i] += 100 * m + c;
+		}
+		int sum = std::accumulate(vec.begin(), vec.end(), 0);
+		for (std::vector<int>::const_iterator it = vec.begin(); it != vec.end(); ++it)
+			if (*it <= sum / n) less.push_back(*it);
+			else more.push_back(*it);
+		AvgDiffAccum lessAcum = {sum / n}, moreAcum = {sum / n + 1};
+		int low = std::accumulate(less.begin(), less.end(), 0, lessAcum);
+		int upp = std::accumulate(more.begin(), more.end(), 0, moreAcum);
+		int ret = std::max(low, upp);
+		printf("$%d.%.2d\n", ret / 100, ret % 100);
+	}
+}
