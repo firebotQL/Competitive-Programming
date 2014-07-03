@@ -4,9 +4,15 @@ import java.io.*;
 
 public class Main
 {
-    public static byte[][] grid = new byte[50][50];
+   public static byte[][] grid = new byte[50][50];
+    public static boolean[][][] visited = new boolean[50][50][4];
+    
     public static int[] dr = { -1, 0, 1, 0 };
-    public static int[] dc = { 0, 1, 0,  -1};
+    public static int[] dc = { 0, 1, 0, -1};
+    
+    public static int[] robotr = { 0, 0, 1, 1 };
+    public static int[] robotc = { 0, 1, 0, 1 };
+    
     public static Map<String, Integer> directionMap = new HashMap<String, Integer>();
     public static Map<Integer, String> directionMap2 = new HashMap<Integer, String>();
     public static String currentDirection = null;
@@ -65,11 +71,6 @@ public class Main
         
     }
     
-    public static void markUsed(int startX, int startY)
-    {
-        grid[startX][startY] = 3;
-    }
-    
     public static int bfs(int startX, int startY, int endX, int endY)
     {
         Queue<Integer> queue = new LinkedList<Integer>();
@@ -79,7 +80,8 @@ public class Main
         queue.add(0);
         queue.add(0);
         
-        markUsed(startX, startY);
+        markUsed(startX, startY, directionMap.get(currentDirection));
+        int result = Integer.MAX_VALUE;
         
         while(!queue.isEmpty())
         {
@@ -91,13 +93,18 @@ public class Main
             
             if (endX == r && endY == c)
             {
+                print(r, c);
+                
+                int z1 = z;
+                int cnt1 = cnt;
+                
                 for(int j = 3; j > 0; --j)
                 {
-                    z += cnt / j;                            
-                    cnt %= j;
+                    z1 += cnt1 / j;                            
+                    cnt1 %= j;
                 }
                 
-                return z;
+                result = Math.min(result, z1);
             }
             
             for(int i = 0; i < 4; i++)
@@ -105,11 +112,18 @@ public class Main
                 int nr = r + dr[i];
                 int nc = c + dc[i];
                 
-                if (place(queue, nr, nc, i))
+                while (canPlace(nr, nc, i))
                 {
+                    markUsed(nr, nc, i);
+                    print(r, c);
+                    
+                    queue.add(r);
+                    queue.add(c);
+                    queue.add(i);
+                    
                     if (d != i)
                     {
-                        z += (i % 2 ==  d % 2) ? 2 : 1;
+                        z += getSecondsPerTurn(i, d);
                         
                         for(int j = 3; j > 0; --j)
                         {
@@ -128,23 +142,69 @@ public class Main
                 }
             }
         }
-        return -1;
+        return result;
+    }
+    
+    public static int getSecondsPerTurn(int i, int d)
+    {
+        return (i % 2 ==  d % 2) ? 2 : 1;
     }
     
     public static boolean place(Queue<Integer> queue, int r, int c, int i)
     {
         if (canPlace(r, c, i))
         {
-            markUsed(r, c);
-            print(r, c);
-            queue.add(r);
-            queue.add(c);
-            queue.add(i);
+            
             return true;
         }
         return false;
     }
     
+    public static void markUsed(int startX, int startY, int d)
+    {
+        visited[startX][startY][d] = true;
+    }
+    
+    public static boolean canPlace(int r, int c, int direction)
+    { 
+        // 1. Is robot within boundaries?
+        for(int i = 0; i < 4; ++i)
+        {        
+            if (!inBoundary(r + robotr[i], c + robotc[i]))
+            {
+                return false;
+            }
+        }
+
+        // 2. Is this location already been visited?
+        if (visited[r][c][direction])
+        {
+            return false;
+        }
+        
+        // 3. Is this location contains obstacles?
+        for(int i = 0; i < 4; ++i)
+        { 
+            if (isObstacle(r + robotr[i], c + robotc[i]))
+            {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    
+    public static boolean inBoundary(int r, int c)
+    {
+        return r >= 0 && c >= 0 && r < M && c < N; 
+    }
+    
+    public static boolean isObstacle(int r, int c)
+    {
+        return  grid[r][c] == 1;
+    }
+
     public static void print(int nx, int ny)
     {
         System.out.println("------------");
@@ -156,7 +216,7 @@ public class Main
                 if ((nx == i && ny == j) || (nx == (i - 1) && ny == (j - 1))
                     || (nx == i && ny == (j - 1)) || (nx == (i - 1) && ny == j))
                 {
-                    System.out.print(2 + " ");
+                    System.out.print("* ");
                 }
                 else
                 {
@@ -166,54 +226,3 @@ public class Main
             System.out.println();
         }
     }
-    
-    public static boolean canPlace(int r, int c, int direction)
-    {
-        if (cannotPlaceBoundary(r, c, 1, 3))
-        {
-            return false;
-        }
-        
-        int nr1 = 0;
-        int nc1 = 0;
-        
-        int nr2 = 0;
-        int nc2 = 0;
-        
-        switch(direction)
-        {
-            case 0:
-                nr1 = nr2 = r;
-                nc1 = nc2 = c + 1;
-                break;
-            case 1:
-                nr1 = r;
-                nc1 = c + 1;
-                nr2 = r + 1;
-                nc2 = c + 1;
-                break;
-            case 2:
-                nr1 = r + 1;
-                nc1 = c;
-                nr2 = r + 1;
-                nc2 = c + 1;
-                break;
-            case 3:
-                nr1 = nr2 = r + 1;
-                nc1 = nc2 = c;
-                break;
-        }
-        
-        if (cannotPlaceBoundary(nr1, nc1, 0, 1) || cannotPlaceBoundary(nr2, nc2, 0, 1) || grid[nr1][nc1] == 1 || grid[nr2][nc2] == 1)
-        {
-            return false;
-        }
-        
-        return true;
-    }
-    
-    public static boolean cannotPlaceBoundary(int r, int c, int bound, int mark)
-    {
-        return r < 0 || c < 0 || r >= (M - bound) || c >= (N - bound) || grid[r][c] == mark;
-    }
-}
