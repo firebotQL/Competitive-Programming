@@ -110,7 +110,7 @@ public class Main
 
 			int result = -1;
 			int ex = N - 1;
-			int ey = M - 1;
+			int ey = M - 1; 
 			
             while(!pq.isEmpty())
             {
