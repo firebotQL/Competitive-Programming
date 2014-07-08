@@ -77,7 +77,12 @@ public class Main
             while(!pq.isEmpty())
             {
                 Vertex u = pq.poll();
-
+				
+				if (u.distance > T)
+				{
+					break;
+				}
+				
                 for(Integer vi : maze.get(u.id))
                 {                    
                     Vertex v = map.get(vi);
