@@ -27,11 +27,13 @@ public class Main
 	{
 		public int id;
 		public int distance;
+		public String previousWord;
 		
-		public Language(int id, int distance)
+		public Language(int id, int distance, String previousWord)
 		{
 			this.id = id;
 			this.distance = distance;
+			this.previousWord = previousWord;
 		}
 		
 		public int compareTo(Language lang)
@@ -123,9 +125,9 @@ public class Main
 	
 			int distance = Integer.MAX_VALUE;
 			
-			if (startId != null && endId != null)
+			if (startId != endId && startId != null && endId != null)
 			{
-				pq.offer(new Language(startId, 0));
+				pq.offer(new Language(startId, 0, " "));
 				while(!pq.isEmpty())
 				{
 					Language cur = pq.poll();
@@ -135,20 +137,18 @@ public class Main
 						distance = cur.distance;
 						break;
 					}
-					else if (visited.add(cur.id))
+					
+					for(Edge adjEdge : adjMap.get(cur.id))
 					{
-						for(Edge adjEdge : adjMap.get(cur.id))
+						if (adjEdge.word.charAt(0) != cur.previousWord.charAt(0))
 						{
-							if (!visited.contains(adjEdge.to))
+							
+							int altSum = cur.distance + adjEdge.word.length();
+							
+							if (altSum < sum[cur.id][adjEdge.to])
 							{
-								
-								int altSum = cur.distance + adjEdge.word.length();
-								
-								if (altSum < sum[cur.id][adjEdge.to])
-								{
-									pq.offer(new Language(adjEdge.to, altSum));
-									sum[cur.id][adjEdge.to] = altSum;
-								}
+								pq.offer(new Language(adjEdge.to, altSum, adjEdge.word));
+								sum[cur.id][adjEdge.to] = altSum;
 							}
 						}
 					}
@@ -164,3 +164,4 @@ public class Main
 			}
 		}
 	}
+}
