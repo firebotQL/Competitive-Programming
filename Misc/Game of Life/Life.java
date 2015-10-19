@@ -43,6 +43,7 @@ public class Life {
         System.out.println();
     }
 
+	// Can add more adjacent edges (e.g. i = -1, j = -1)
     private static int getNearbyCount(List<String> gridLines, int i, int j) {
         return aliveCountByOffset(gridLines, i, j, -1, 0) +
                 aliveCountByOffset(gridLines, i, j, 0, -1) +
