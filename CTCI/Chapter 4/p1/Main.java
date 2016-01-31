@@ -1,7 +1,7 @@
 import java.util.*;
 
 /**
- * Given a directed graph, design an algorithm to find out whether there is a route betwen two nodes.
+ * Route Between Nodes: Given a directed graph, design an algorithm to find out whether there is a route betwen two nodes.
  */
 public class Main {
     // 1 - 3 path exist
