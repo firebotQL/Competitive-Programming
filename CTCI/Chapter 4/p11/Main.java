@@ -1,6 +1,4 @@
-package chapter4.p10;
-
-import java.util.Random;
+import java.util.*;
 
 /*
  * Random Node: You are implementing a binary tree class from scratch which, in addition to insert, find, and delete,
@@ -35,24 +33,52 @@ public class Main {
         }
     }
 
-    /**
-     * TODO: THINK ABOUT when only 1 node(root) or deleting correctly on found key!
-     */
-    public static void delete(Node current, Node previous, int deleteKey) {
+    public static void setParentRelationship(Node current, Node parent, Node newValue) {
+        if (parent.left == current) {
+            parent.left = newValue;
+        } else {
+            parent.right = newValue;
+        }
+    }
+
+    public static void delete(Node current, Node parent, int deleteKey) {
         if (current != null) {
             if (current.key == deleteKey) {
-                previous.left = current.left;
-                previous.right = current.right;
+                if (current.left != null && current.right != null) {
+                    List<Node> result = findMin(current.right);
+                    Node successor = result.get(0);
+                    Node successorParent = result.get(1);
+                    current.key = successor.key;
+                    delete(successor, successorParent, successor.key);
+                } else if (current.left != null) {
+                    setParentRelationship(current, parent, current.left);
+                } else if (current.right != null) {
+                    setParentRelationship(current, parent, current.right);
+                } else {
+                    setParentRelationship(current, parent, null);
+                }
             } else {
-                previous = current;
+                parent = current;
                 if (deleteKey < current.key) {
                     current = current.left;
                 } else {
                     current = current.right;
                 }
-                delete(current, previous, deleteKey);
+                delete(current, parent, deleteKey);
             }
         }
+    }
+
+    private static List<Node> findMin(Node node) {
+        Node parent = node;
+        while(node.left != null) {
+            parent = node;
+            node = node.left;
+        }
+        List<Node> result = new ArrayList<Node>();
+        result.add(node);
+        result.add(parent);
+        return result;
     }
 
     public static Node getRandomNode(Node current) {
