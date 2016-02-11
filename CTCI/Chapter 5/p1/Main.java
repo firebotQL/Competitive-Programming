@@ -1,5 +1,3 @@
-import java.util.BitSet;
-
 /**
  * Insertion: You are given two 32-bit numbers, N and M, and two bit positions, i and j. Write a method to insert M
  * into N such that M starts at bit j and ends at bit i. You can assume that the bits j through i have enough space to fit al lof M.
@@ -10,19 +8,17 @@ import java.util.BitSet;
  */
 public class Main {
     public static void main(String[] args) {
-        int N = 1000000000;
-        int M = 10011;
+        int N = 0b10000000000;
+        int M = 0b10011;
         int i = 2, j = 6;
-        int tmpM = M;
-        int resultN = N;
-        while(i != j) {
-            resultN = updateBit(resultN, tmpM % 10, i++);
-            tmpM /= 10;
-            if (tmpM == 0) {
-                tmpM = M;
-            }
+        for(int ii = i; ii <= j; ii++) {
+            N = updateBit(N, getBit(M, ii - i), ii);
         }
-        System.out.println(resultN);
+        System.out.println(Integer.toBinaryString(N));
+    }
+
+    public static int getBit(int num, int i) {
+        return (num & (0b1 << i)) != 0 ? 1 : 0;
     }
 
     public static int updateBit(int num, int bit, int index) {
@@ -30,3 +26,4 @@ public class Main {
         return num & mask | (bit << index);
     }
 }
+
