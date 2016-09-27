@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
 
+// Solution reference: https://www.cs.bham.ac.uk/~mdr/teaching/modules04/java2/TilesSolvability.html
 public class Solution {
 
     public static void main(String[] args) {
