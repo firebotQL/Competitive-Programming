@@ -29,4 +29,18 @@ public class Main {
                .count();
        System.out.println(count);
     }
+
+    private static class Claim implements Comparable<Claim> {
+      final Integer x1, y1, x2, y2;
+
+      public Claim(String line) {
+          final String[] split = line.split("@|:");
+          final String[] coord = split[1].trim().split(",");
+          final String[] length = split[2].trim().split("x");
+          x1 = Integer.valueOf(coord[0]);
+          y1 = Integer.valueOf(coord[1]);
+          x2 = x1 + Integer.valueOf(length[0]);
+          y2 = y1 + Integer.valueOf(length[1]);
+      }
+  }
 }
