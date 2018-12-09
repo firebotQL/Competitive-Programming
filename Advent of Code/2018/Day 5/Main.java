@@ -7,6 +7,8 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+public class Main {
+  
     public static void main(String[] args) throws FileNotFoundException {
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("input.txt")));
         String polymer = br.lines().collect(Collectors.toList()).get(0);
