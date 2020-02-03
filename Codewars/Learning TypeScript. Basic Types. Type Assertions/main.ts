@@ -6,7 +6,7 @@ export class ErrorServerResult {
   constructor (public httpCode: number, public message:string) {}
 }
 
-export function getResult(result: any) {
+export function getResult(result: SuccessServerResult | ErrorServerResult) {
   if (result.httpCode === 200) {
     // Returning resultObject if everything is OK
     return (result as SuccessServerResult).resultObject;
