@@ -1,3 +1,4 @@
+// Viable O(N + M) solution
 const find_string_anagrams = function(str, pattern) {
   result_indexes = [];
   let windowStart = 0;
