@@ -1,3 +1,4 @@
+// O(N + M) time and O(M) space complexities
 const find_substring = function(str, pattern) {
   const charMap = {};
   for(let i = 0; i < pattern.length; i++) {
