@@ -3,10 +3,12 @@ function find_word_concatenation(str, words) {
     return [];
   }
 
-  let wordFrequency = words.reduce((freq, word) => {
-    if (!(word in wordFrequency)) freq[word] = 0;
-    feq[word] += 1;
-  }, {});
+  let wordFrequency = {};
+
+  words.forEach((word) => {
+    if (!(wordFrequency[word])) wordFrequency[word] = 0;
+    wordFrequency[word] += 1;
+  });
 
   const result_indices = [],
     wordsCount = words.length;
