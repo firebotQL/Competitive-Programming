@@ -1,4 +1,5 @@
 // O(N) runtime and O(1) space complexity
+
 class Node {
   constructor(value, next = null) {
     this.value = value;
