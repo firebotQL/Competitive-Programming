@@ -24,12 +24,6 @@ const reverse_sub_list = function (head, p, q) {
     initialCurrent = initialCurrent.next;
   }
 
-  // let initialPrevious;
-  // let sublistHead;
-  // if (p > 1) {
-  //   initialPrevious = previous;
-  // }
-
   let current = initialCurrent;
   let previous = initialPrevious;
 
@@ -39,8 +33,6 @@ const reverse_sub_list = function (head, p, q) {
     previous = current;
     current = tmpNext;
   }
-
-  debugger;
 
   initialCurrent.next = current;
 
