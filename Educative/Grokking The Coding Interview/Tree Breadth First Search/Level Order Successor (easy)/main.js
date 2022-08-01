@@ -16,7 +16,7 @@ const find_successor = function (root, key) {
   while (deque.length > 0) {
     const node = deque.shift();
     if (catchNext) return node;
-    if (key == node.key) catchNext = true;
+    if (key == node.val) catchNext = true;
     if (node.left) deque.push(node.left);
     if (node.right) deque.push(node.right);
   }
@@ -30,7 +30,6 @@ root.left.left = new TreeNode(4);
 root.left.right = new TreeNode(5);
 
 result = find_successor(root, 3);
-console.log("Test");
 if (result) {
   console.log(result.val);
 }
