@@ -12,8 +12,22 @@ class TreeDiameter {
   }
 
   find_diameter(root) {
-    // TODO: Write your code here
-    return -1;
+    this.calculate_height(root);
+    return this.treeDiameter;
+  }
+
+  calculate_height(currentNode) {
+    if (!currentNode) return 0;
+
+    const leftTreeHeight = this.calculate_height(currentNode.left);
+    const rightTreeHeight = this.calculate_height(currentNode.right);
+
+    if (leftTreeHeight !== 0 && rightTreeHeight !== 0) {
+      const diameter = leftTreeHeight + rightTreeHeight + 1;
+      this.treeDiameter = Math.max(this.treeDiameter, diameter);
+    }
+
+    return Math.max(leftTreeHeight, rightTreeHeight) + 1;
   }
 }
 
