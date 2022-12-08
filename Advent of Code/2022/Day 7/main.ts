@@ -1,93 +1,75 @@
 import * as fs from "fs";
 const file = fs.readFileSync("input.txt", "utf8");
 
-class Node {
+class Tree {
   constructor(
-    public name?: string,
-    public type?: string,
-    public size: number = 0,
-    public parent?: Node | undefined,
-    public children: Node[] = []
+    public height: number,
+    public visible?: boolean,
+    public nMax?: number,
+    public sMax?: number,
+    public wMax?: number,
+    public eMax?: number
   ) {}
-
-  public addChild(child: Node) {
-    this.children.push(child);
-  }
-
-  public addSize(size: number) {
-    this.size += size;
-  }
 }
 
-const root = new Node("/", "dir");
-let current: Node | undefined = root;
+let row: number = 0;
 
-const lines = file.split(/\r?\n/);
-
-const navigateToCorrectFolder = (parameter: string) => {
-  switch (parameter) {
-    case "..":
-      current = current?.parent;
-      break;
-    case "/":
-      current = root;
-      break;
-    default:
-      current = current?.children.find((node) => node.name === parameter);
+const map: Tree[][] = file.split(/\r?\n/).reduce((map, line) => {
+  for (let i = 0; i < line.length; i++) {
+    if (!map[row]) map[row] = [];
+    map[row].push(new Tree(+line[i]));
   }
-};
+  row++;
+  return map;
+}, [] as Tree[][]);
 
-for (let i = 0; i < lines.length; i++) {
-  const line = lines[i];
-  if (line.startsWith("$")) {
-    const [placeholder, command, parameter] = line.split(" ");
-    switch (command) {
-      case "cd":
-        navigateToCorrectFolder(parameter);
-        break;
-      case "ls":
-        continue;
+// Runtime - O(N*2N) => O(N^2)
+const hydrateWithHorizonTreeHeights = (map: Tree[][]) => {
+  for (let i = 0; i < map.length; i++) {
+    let maxLeft = Number.MIN_SAFE_INTEGER;
+    let maxTop = Number.MIN_SAFE_INTEGER;
+    for (let j = 0; j < map[i].length; j++) {
+      const treeR = map[i][j];
+      treeR.wMax = maxLeft;
+      maxLeft = Math.max(maxLeft, treeR.height);
+
+      const treeC = map[j][i];
+      treeC.nMax = maxTop;
+      maxTop = Math.max(maxTop, treeC.height);
     }
-  } else {
-    const [dirOrSize, name] = line.split(" ");
-    let node;
-    if (dirOrSize.includes("dir")) {
-      node = new Node(name, "dir", undefined, current);
-    } else {
-      node = new Node(name, "file", parseInt(dirOrSize), current);
+    let maxRight = Number.MIN_SAFE_INTEGER;
+    let maxBottom = Number.MIN_SAFE_INTEGER;
+    for (let j = map[i].length - 1; j >= 0; j--) {
+      const treeR = map[i][j];
+      treeR.eMax = maxRight;
+      maxRight = Math.max(maxRight, treeR.height);
+
+      const treeC = map[j][i];
+      treeC.sMax = maxBottom;
+      maxBottom = Math.max(maxBottom, treeC.height);
     }
-    current?.addChild(node);
   }
-}
-
-const hydrateFolderSizes = (currentNode: Node) => {
-  const { children: nodes } = currentNode;
-  for (const node of nodes) {
-    if (node.type === "file") currentNode.addSize(node.size);
-    if (node.type === "dir") currentNode.addSize(hydrateFolderSizes(node));
-  }
-  return currentNode.size;
 };
 
-const findMatchingFolder = (currentNode: Node, prefix: string) => {
-  console.log(
-    prefix,
-    currentNode.name,
-    `(${currentNode.type}, size=${currentNode.size})`
-  );
-  let result = 0;
-  if (currentNode === undefined) return result;
-
-  if (currentNode.type === "dir" && currentNode.size < 100000) {
-    result += currentNode.size;
+// Runtime - O(N^2)
+const setVisibleTreesAndReturnCount = (map: Tree[][]) => {
+  let visibleCnt = 0;
+  for (let i = 0; i < map.length; i++) {
+    for (let j = 0; j < map[i].length; j++) {
+      const tree = map[i][j];
+      if (
+        tree.height > tree.nMax! ||
+        tree.height > tree.sMax! ||
+        tree.height > tree.wMax! ||
+        tree.height > tree.eMax!
+      ) {
+        tree.visible = true;
+        visibleCnt++;
+      }
+    }
   }
-
-  for (const childNode of currentNode.children) {
-    result += findMatchingFolder(childNode, " " + prefix);
-  }
-  return result;
+  return visibleCnt;
 };
 
-hydrateFolderSizes(root);
-
-console.log(findMatchingFolder(root, "- "));
+hydrateWithHorizonTreeHeights(map);
+console.log(setVisibleTreesAndReturnCount(map));
