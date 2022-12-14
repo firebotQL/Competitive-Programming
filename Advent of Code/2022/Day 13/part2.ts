@@ -1,158 +1,53 @@
 import * as fs from "fs";
 const file = fs.readFileSync("input.txt", "utf8");
 
-let cycle = 0;
+const areBothElementsNumbers = (elementInOne: any, elementInTwo: any) =>
+  Number.isInteger(elementInOne) && Number.isInteger(elementInTwo);
+const areBothElementsArrays = (elementInOne: any, elementInTwo: any) =>
+  Array.isArray(elementInOne) && Array.isArray(elementInTwo);
 
-const monkeyIdMatch = /Monkey (\d+):/;
-const startingItemsMatch = /Starting items: (.*)/;
-const operationMatch = /Operation: new = old (.) (\w+)/;
-const testMatch = /Test: divisible by (\d+)/;
-const truePassMatch = /If true: throw to monkey (\d+)/;
-const falsePassMatch = /If false: throw to monkey (\d+)/;
-
-class Monkey {
-  constructor(
-    public id: number,
-    public items?: number[],
-    public operator?: string,
-    public operand?: string,
-    public test?: number,
-    public truePassMonkey?: number,
-    public falsePassMonkey?: number,
-    public inspected: number = 0
-  ) {}
-  toJSON() {
-    return `Monkey ${this.id}: ${this.items?.join(", ") ?? ""}`;
+const compare = (left: any, right: any): boolean | undefined => {
+  if (areBothElementsNumbers(left, right)) {
+    if (left < right) return true;
+    if (left > right) return false;
+    return undefined;
   }
-}
 
-const monkeys = new Map<number, Monkey>();
-let currentMonkey: Monkey | undefined;
-
-const createMonkey = (line: string) => {
-  const [fullMatch, monkeyId] = line.match(monkeyIdMatch) || [];
-  if (monkeyId) {
-    currentMonkey = new Monkey(+monkeyId);
-    monkeys.set(+monkeyId, currentMonkey);
+  if (areBothElementsArrays(left, right)) {
+    for (let i = 0; i < Math.min(left.length, right.length); i++) {
+      const result: boolean | undefined = compare(left[i], right[i]);
+      if (result !== undefined) return result;
+    }
+    return compare(left.length, right.length);
   }
+
+  return compare([left].flat(), [right].flat());
 };
 
-const setStartingItems = (line: string) => {
-  const [fullMatch, items] = line.match(startingItemsMatch) || [];
-  if (items && currentMonkey) {
-    currentMonkey.items = items.split(", ").map((item) => +item);
-  }
-};
-
-const setOperation = (line: string) => {
-  const [fullMatch, operator, operand]: string[] =
-    line.match(operationMatch) || [];
-  if (operator && operand && currentMonkey) {
-    currentMonkey.operator = operator;
-    currentMonkey.operand = operand;
-  }
-};
-
-const setTest = (line: string) => {
-  const [fullMatch, test]: string[] = line.match(testMatch) || [];
-  if (test && currentMonkey) {
-    currentMonkey.test = +test;
-  }
-};
-
-const setTruePass = (line: string) => {
-  const [fullMatch, monkeyNr]: string[] = line.match(truePassMatch) || [];
-  if (monkeyNr && currentMonkey) {
-    currentMonkey.truePassMonkey = +monkeyNr;
-  }
-};
-
-const setFalsePass = (line: string) => {
-  const [fullMatch, monkeyNr]: string[] = line.match(falsePassMatch) || [];
-  if (monkeyNr && currentMonkey) {
-    currentMonkey.falsePassMonkey = +monkeyNr;
-  }
-};
-
-const init = () => {
-  file.split(/\r?\n/).forEach((line) => {
-    createMonkey(line);
-    setStartingItems(line);
-    setOperation(line);
-    setTest(line);
-    setTruePass(line);
-    setFalsePass(line);
-  });
-};
-
-const calculateWorryLevel = (
-  item: number,
-  operator: string,
-  operand: string
-) => {
-  const realOperand = operand === "old" ? item : +operand;
-  switch (operator) {
-    case "+":
-      return item + realOperand;
-    case "-":
-      return item - realOperand;
-    case "*":
-      return item * realOperand;
-    case "/":
-      return item / realOperand;
-  }
-};
-
-const printRoundLevels = (round: number) => {
-  console.log(`Round ${round}:`);
-  monkeys.forEach((monkey) => {
-    console.log(JSON.stringify(monkey));
-  });
-};
-
-const printMonkeyInspectionTimes = () => {
-  monkeys.forEach(({ id, inspected }) => {
-    console.log(`Monkey ${id} inspected ${inspected} items`);
-  });
-};
-
-const calculateMonkeyBusiness = () => {
-  const [mostActiveMonkeyOne, mostActiveMonkeyTwo] = [...monkeys.values()].sort(
-    (a, b) => b.inspected - a.inspected
-  );
-  return mostActiveMonkeyOne.inspected * mostActiveMonkeyTwo.inspected;
-};
-
-// THIS IS THE PART THAT IS DIFFERENT FROM PART 1, IMPORANT!
-const calculateModulus = () => {
-  const firstMonkeys = [...monkeys.values()];
-  return firstMonkeys.reduce((acc, { test }) => acc * test!, 1);
-};
+const dividerPacketOne = [[2]];
+const dividerPacketTwo = [[6]];
 
 const solve = () => {
-  init();
-  const modulus = calculateModulus();
-  for (let round = 0; round < 10000; round++) {
-    for (const [monkeyId, monkey] of monkeys) {
-      if (monkey.items) {
-        const { operator, operand, truePassMonkey, falsePassMonkey } = monkey;
-        monkey.items.forEach((item) => {
-          const worryLevel = calculateWorryLevel(item, operator!, operand!);
-          const boredWorryLevel = worryLevel! % modulus;
-          const monkeyToThrowTo =
-            boredWorryLevel! % monkey.test! === 0
-              ? monkeys.get(truePassMonkey!)
-              : monkeys.get(falsePassMonkey!);
-          monkeyToThrowTo!.items!.push(boredWorryLevel!);
-          monkey.inspected++;
-        });
-        monkey.items = [];
-      }
-    }
-    printRoundLevels(round + 1);
-  }
+  const packets = file
+    .split(/\r?\n/)
+    .filter((line) => line)
+    .map((line) => JSON.parse(line));
+  packets.push(dividerPacketOne);
+  packets.push(dividerPacketTwo);
+  packets.sort((a, b) => {
+    const compareResult = compare(a, b);
+    if (compareResult === true) return -1;
+    if (compareResult === false) return 1;
+    return 0;
+  });
+
+  const [firstIndex, secondIndex] = packets.reduce((result, current, index) => {
+    if (current === dividerPacketOne) result[0] = index + 1;
+    if (current === dividerPacketTwo) result[1] = index + 1;
+    return result;
+  }, []);
+
+  return firstIndex * secondIndex;
 };
 
-solve();
-printMonkeyInspectionTimes();
-console.log(calculateMonkeyBusiness());
+console.log(solve());

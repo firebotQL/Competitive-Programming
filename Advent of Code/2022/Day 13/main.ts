@@ -2,58 +2,49 @@ import * as fs from "fs";
 const file = fs.readFileSync("input.txt", "utf8");
 
 const areBothElementsNumbers = (elementInOne: any, elementInTwo: any) =>
-  Number.isInteger(elementInOne) && Number.isInteger(elementInOne);
+  Number.isInteger(elementInOne) && Number.isInteger(elementInTwo);
 const areBothElementsArrays = (elementInOne: any, elementInTwo: any) =>
-  Array.isArray(elementInOne) && Array.isArray(elementInOne);
+  Array.isArray(elementInOne) && Array.isArray(elementInTwo);
 
-const checkIfInOrder = (packetOne: any[], packetTwo: any[]): boolean => {
-  let rightOrder = true;
-  while (packetOne.length && packetTwo.length && rightOrder) {
-    const elementInOne = packetOne.shift();
-    const elementInTwo = packetTwo.shift();
-    if (
-      areBothElementsNumbers(elementInOne, elementInTwo) &&
-      elementInOne > elementInTwo
-    ) {
-      rightOrder = false;
-    } else if (areBothElementsArrays(elementInOne, elementInTwo)) {
-      rightOrder = checkIfInOrder(elementInOne, elementInTwo);
-    } else if (Number.isInteger(elementInOne)) {
-      rightOrder = checkIfInOrder([elementInOne], elementInTwo);
-    } else if (Number.isInteger(elementInTwo)) {
-      rightOrder = checkIfInOrder(elementInOne, [elementInTwo]);
-    }
+const compare = (left: any, right: any): boolean | undefined => {
+  if (areBothElementsNumbers(left, right)) {
+    if (left < right) return true;
+    if (left > right) return false;
+    return undefined;
   }
 
-  return rightOrder && packetOne.length === 0 && packetTwo.length === 0;
+  if (areBothElementsArrays(left, right)) {
+    for (let i = 0; i < Math.min(left.length, right.length); i++) {
+      const result: boolean | undefined = compare(left[i], right[i]);
+      if (result !== undefined) return result;
+    }
+    return compare(left.length, right.length);
+  }
+
+  return compare([left].flat(), [right].flat());
 };
 
 let packets: any[][] = [];
 
 let sumOfIndicesInRightOrder = 0;
-const init = () => {
-  file.split(/\r?\n/).forEach((line, index) => {
-    if (!line) {
-      const packetOne = packets[0];
-      const packetTwo = packets[1];
-      if (checkIfInOrder(packetOne, packetTwo)) {
-        sumOfIndicesInRightOrder += index + index - 1;
-      } else {
-        console.log("Not in order");
-        console.log("packetOne=", packetOne);
-        console.log("packetTwo=", packetTwo);
-      }
-
-      return;
-    }
-    console.log(line);
-    packets[index % 2] = JSON.parse(line);
-    console.log(JSON.parse(line));
-  });
-};
+let pair = 1;
 
 const solve = () => {
-  init();
+  file.split(/\r?\n/).forEach((line, index) => {
+    if (!line) {
+      const [leftPackets, rightPackets] = packets;
+      if (compare(leftPackets, rightPackets)) {
+        sumOfIndicesInRightOrder += pair;
+        console.log("In order");
+      } else {
+        console.log("Not in order");
+      }
+      packets = [];
+      pair++;
+    } else {
+      packets.push(JSON.parse(line));
+    }
+  });
 };
 
 solve();
