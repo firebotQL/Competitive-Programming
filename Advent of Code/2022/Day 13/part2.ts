@@ -3,6 +3,7 @@ const file = fs.readFileSync("input.txt", "utf8");
 
 const areBothElementsNumbers = (elementInOne: any, elementInTwo: any) =>
   Number.isInteger(elementInOne) && Number.isInteger(elementInTwo);
+
 const areBothElementsArrays = (elementInOne: any, elementInTwo: any) =>
   Array.isArray(elementInOne) && Array.isArray(elementInTwo);
 
@@ -14,8 +15,9 @@ const compare = (left: any, right: any): boolean | undefined => {
   }
 
   if (areBothElementsArrays(left, right)) {
-    for (let i = 0; i < Math.min(left.length, right.length); i++) {
-      const result: boolean | undefined = compare(left[i], right[i]);
+    const minLength = Math.min(left.length, right.length);
+    for (let index = 0; index < minLength; index++) {
+      const result: boolean | undefined = compare(left[index], right[index]);
       if (result !== undefined) return result;
     }
     return compare(left.length, right.length);
